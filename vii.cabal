@@ -1,0 +1,104 @@
+cabal-version:  3.0
+
+name:           vii
+version:        0.0.1
+author:         Trung Do
+homepage:       https://github.com/7c78/vii#readme
+license:        GPL-3.0-or-later
+license-file:   LICENSE
+build-type:     Simple
+extra-doc-files:
+    README.md
+
+flag dev
+    description: Defer type errors for development
+    manual:      True
+    default:     False
+
+common common-options
+    default-language:   GHC2021
+    default-extensions: DeriveAnyClass
+                      , DerivingStrategies
+                      , LambdaCase
+                      , OverloadedStrings
+    ghc-options:        -Wall
+                        -Wno-name-shadowing
+                        -Wincomplete-record-updates
+    build-depends:      hiedb-plugin
+    if flag(dev)
+        ghc-options:    -fwrite-ide-info
+                        -hiedir .hiefiles
+                        -plugin-package hiedb-plugin -fplugin Plugin.HieDb
+                        -fdefer-type-errors
+                        -Werror=deferred-type-errors
+                        -Werror=deferred-out-of-scope-variables
+                        -fno-defer-typed-holes
+
+library
+    import:             common-options
+    hs-source-dirs:     src
+    exposed-modules:    System.File
+                      , Data.Maybe.X
+                      , IBus.Address
+                      , IBus.Attribute
+                      , IBus.Common
+                      , IBus.Engine
+                      , IBus.Key
+                      , IBus.Modifier
+                      , IBus.Text
+                      , IBusVii.App
+                      , IBusVii.App.Env
+                      , IBusVii.App.Log
+                      , IBusVii.App.Options
+                      , IBusVii.Engine
+                      , IBusVii.PreeditText
+                      , IBusVii.Word32
+                      , Vii.InputMethod
+                      , Vii.ViSymbol
+                      , Vii.ViWord
+                      , Vii.ViWord.Component
+                      , Vii.ViWord.Compose
+                      , Vii.ViWord.ComposeSymbol
+                      , Vii.ViWord.RemoveLastLetter
+                      , Vii.ViWord.Render
+                      , Vii.ViWord.Type
+    build-depends:      base
+                      , co-log
+                      , co-log-core
+                      , containers
+                      , dbus
+                      , directory
+                      , exceptions
+                      , filepath
+                      , hashable
+                      , mtl
+                      , text
+                      , unordered-containers
+                      , yaml
+
+executable vii
+    import:             common-options
+    hs-source-dirs:     app
+    main-is:            Main.hs
+    build-depends:      vii
+                      , base
+                      , optparse-applicative
+    ghc-options:        -threaded
+                        -rtsopts
+                        -with-rtsopts=-N
+
+test-suite vii-test
+    import:             common-options
+    type:               exitcode-stdio-1.0
+    hs-source-dirs:     test
+    main-is:            Spec.hs
+    other-modules:      Vii.InputMethodSpec
+                      , Vii.Test
+    build-depends:      vii
+                      , base
+                      , hspec
+                      , hspec-discover
+                      , text
+    ghc-options:        -threaded
+                        -rtsopts
+                        -with-rtsopts=-N

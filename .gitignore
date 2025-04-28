@@ -1,0 +1,17 @@
+# nix
+result
+result-*
+.nix-shell
+
+# direnv
+.direnv
+
+# cabal
+dist
+dist-*
+cabal.project.local
+cabal.project.local~
+
+# static-ls
+.hiefiles
+.hiedb
